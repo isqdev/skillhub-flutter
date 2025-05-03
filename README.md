@@ -1,0 +1,1 @@
+App desenvolvido para fins de aprendizado do framework Flutter. 
