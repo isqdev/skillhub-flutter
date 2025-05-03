@@ -1,1 +1,1 @@
-App desenvolvido para fins de aprendizado do framework Flutter. 
+Repositório dedicado a desenvolver um repositório de certificados em Flutter. Faço este projeto para fins de aprendizado do framework. 
