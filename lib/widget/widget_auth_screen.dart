@@ -39,7 +39,6 @@ class WidgetAuthScreen extends StatelessWidget {
                 ),
               ),
             ),
-
             ElevatedButton(
               onPressed: () => {},
               style: ElevatedButton.styleFrom(
