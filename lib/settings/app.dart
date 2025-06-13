@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meu_app/app_colors.dart';
-import 'package:meu_app/widget/widget_add_certificate.dart';
-import 'package:meu_app/widget/widget_auth_screen.dart';
-import 'package:meu_app/widget/widget_login.dart';
-import 'package:meu_app/widget/widget_perfil.dart';
+import 'package:meu_app/widget/widget_dashboard.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({key}) : super(key: key);
@@ -17,14 +14,11 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: AppColors.gray500
       ),
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
-      
+      initialRoute: '/dashboard',
       routes: {
-        '/' : (context) => WidgetAuthScreen(),
-        '/login' : (context) => WidgetLogin(),
-        '/perfil' : (context) => WidgetPerfil(),
-        '/certificado/cadastro' : (context) => WidgetAddCertificate()
-      }
+        '/dashboard': (context) => const WidgetDashboard(),
+        // Add other routes here
+      },
     );
   }
 }

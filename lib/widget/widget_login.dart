@@ -55,7 +55,7 @@ class WidgetLogin extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: ElevatedButton(
-                      onPressed: () => Navigator.pushNamed(context, '/perfil'),
+                      onPressed: () => Navigator.pushNamed(context, '/dashboard'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.teal,
                         shape: RoundedRectangleBorder(
