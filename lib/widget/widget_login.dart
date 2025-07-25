@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meu_app/app_colors.dart';
+import './../settings/routes.dart'; // Importar o arquivo de rotas
 
 class WidgetLogin extends StatelessWidget {
   const WidgetLogin({super.key});
@@ -55,7 +56,7 @@ class WidgetLogin extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: ElevatedButton(
-                      onPressed: () => Navigator.pushNamed(context, '/dashboard'),
+                      onPressed: () => Navigator.pushNamed(context, Routes.dashboard),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.teal,
                         shape: RoundedRectangleBorder(

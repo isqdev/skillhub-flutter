@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:meu_app/app_colors.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/services.dart';
 
-class WidgetAddCertificate extends StatefulWidget {
-  const WidgetAddCertificate({super.key});
+class WidgetAddEvent extends StatefulWidget {
+  const WidgetAddEvent({super.key});
 
   @override
-  State<WidgetAddCertificate> createState() => _WidgetAddCertificateState();
+  State<WidgetAddEvent> createState() => _WidgetAddEventState();
 }
 
-class _WidgetAddCertificateState extends State<WidgetAddCertificate> {
+class _WidgetAddEventState extends State<WidgetAddEvent> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _instituicaoController = TextEditingController();
-  final TextEditingController _horasController = TextEditingController();
-  String? _tipoSelecionado;
-  String? _arquivoNome;
-
-  final List<String> tipos = ['Curso', 'Minicurso', 'Evento'];
+  final TextEditingController _descricaoController = TextEditingController();
+  final TextEditingController _tagsController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Adicionar Certificado')),
+      appBar: AppBar(
+        title: Text("Cadastrar evento", style: TextStyle(color: AppColors.white)),
+        iconTheme: IconThemeData(color: Colors.white),
+        centerTitle: true,
+        backgroundColor: AppColors.gray500,
+      ),
       body: Center(
         child: SizedBox(
           width: 287,
@@ -32,6 +32,7 @@ class _WidgetAddCertificateState extends State<WidgetAddCertificate> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Nome
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: TextFormField(
@@ -41,12 +42,13 @@ class _WidgetAddCertificateState extends State<WidgetAddCertificate> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
-                      labelText: 'Nome do certificado',
+                      labelText: 'Nome do evento',
                     ),
                     validator: (value) =>
                         value == null || value.isEmpty ? 'Campo obrigatório' : null,
                   ),
                 ),
+                // Instituição
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: TextFormField(
@@ -62,92 +64,38 @@ class _WidgetAddCertificateState extends State<WidgetAddCertificate> {
                         value == null || value.isEmpty ? 'Campo obrigatório' : null,
                   ),
                 ),
-                // Tipo
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: DropdownButtonFormField<String>(
-                    style: TextStyle(color: AppColors.white),
-                    value: _tipoSelecionado,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      labelText: 'Selecione o tipo',
-                    ),
-                    dropdownColor: AppColors.gray400,
-                    items: tipos
-                        .map(
-                          (tipo) => DropdownMenuItem(
-                            value: tipo,
-                            child: Text(
-                              tipo,
-                              style: TextStyle(color: AppColors.white),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _tipoSelecionado = value;
-                      });
-                    },
-                    validator: (value) =>
-                        value == null ? 'Selecione um tipo' : null,
-                  ),
-                ),
-                // Horas
+                // Descrição
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: TextFormField(
                     style: TextStyle(color: AppColors.white),
-                    controller: _horasController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    controller: _descricaoController,
+                    maxLines: 3,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
-                      labelText: 'Horas',
+                      labelText: 'Descrição',
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Campo obrigatório';
-                      }
-                      if (int.tryParse(value) == null) {
-                        return 'Digite um número válido';
-                      }
-                      return null;
-                    },
+                    validator: (value) =>
+                        value == null || value.isEmpty ? 'Campo obrigatório' : null,
                   ),
                 ),
-                // Arquivo
+                // Tags
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          _arquivoNome ?? 'Nenhum arquivo selecionado',
-                          style: TextStyle(
-                            color: AppColors.white,
-                            fontSize: 14,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                  child: TextFormField(
+                    style: TextStyle(color: AppColors.white),
+                    controller: _tagsController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
                       ),
-                      IconButton(
-                        icon: Icon(Icons.attach_file, color: AppColors.teal),
-                        tooltip: 'Selecionar arquivo',
-                        onPressed: () async {
-                          FilePickerResult? result = await FilePicker.platform.pickFiles();
-                          if (result != null && result.files.isNotEmpty) {
-                            setState(() {
-                              _arquivoNome = result.files.single.name;
-                            });
-                          }
-                        },
-                      ),
-                    ],
+                      labelText: 'Tags',
+                      hintText: 'Ex: tecnologia, programação, flutter',
+                    ),
+                    validator: (value) =>
+                        value == null || value.isEmpty ? 'Campo obrigatório' : null,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -155,8 +103,9 @@ class _WidgetAddCertificateState extends State<WidgetAddCertificate> {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Certificado salvo!')),
+                        const SnackBar(content: Text('Evento cadastrado com sucesso!')),
                       );
+                      Navigator.pop(context);
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -167,7 +116,7 @@ class _WidgetAddCertificateState extends State<WidgetAddCertificate> {
                     fixedSize: const Size(287, 53),
                   ),
                   child: Text(
-                    "Adicionar certificado",
+                    "Cadastrar evento",
                     style: TextStyle(color: AppColors.white, fontSize: 20),
                   ),
                 ),

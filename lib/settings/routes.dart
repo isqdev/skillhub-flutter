@@ -1,22 +1,47 @@
-import 'package:meu_app/widget/widget_dashboard.dart';
-import 'package:meu_app/widget/widget_cadastro_usuario.dart';
-import 'package:meu_app/widget/widget_cadastro_instituicao.dart';
-import 'package:meu_app/widget/widget_cadastro_tipo_certificado.dart';
-import 'package:meu_app/widget/widget_cadastro_categoria.dart';
-import 'package:meu_app/widget/widget_cadastro_area.dart';
+import 'package:meu_app/widget/entities/widget_add_user.dart';
+import 'package:meu_app/widget/entities/widget_edit_user.dart';
+import 'package:meu_app/widget/entities/widget_user.dart';
 import 'package:meu_app/widget/widget_auth_screen.dart';
+import 'package:meu_app/widget/widget_dashboard.dart';
 import 'package:meu_app/widget/widget_login.dart';
-import 'package:meu_app/widget/widget_perfil.dart';
-import 'package:meu_app/widget/widget_add_certificate.dart';
+import 'package:meu_app/widget/entities/widget_certificate.dart';
+import 'package:meu_app/widget/entities/widget_add_certificate.dart';
+import 'package:meu_app/widget/entities/widget_event.dart';
+import 'package:meu_app/widget/entities/widget_add_event.dart';
+import 'package:meu_app/widget/entities/widget_institution.dart';
+import 'package:meu_app/widget/entities/widget_add_institution.dart';
+import 'package:meu_app/widget/entities/widget_area.dart';
+import 'package:meu_app/widget/entities/widget_add_area.dart';
+import 'package:meu_app/widget/entities/widget_tag.dart';
+import 'package:meu_app/widget/entities/widget_add_tag.dart';
+import 'package:meu_app/widget/entities/widget_certificate_type.dart';
+import 'package:meu_app/widget/entities/widget_add_certificate_type.dart';
+import 'package:meu_app/widget/entities/widget_favorite_courses.dart';
 import 'package:flutter/material.dart';
 
 class Routes {
   static const String auth = '/';
   static const String login = '/login';
   static const String signUp = '/cadastro';
-  static const String profile = '/perfil';
+  static const String profile = '/certificate';
+
   static const String certificates = '/certificados';
   static const String addCertificate = '/certificados/cadastro';
+  static const String user = '/user';
+  static const String addUser = '/user/cadastro';
+  static const String editUser = '/user/editar';
+  static const String events = '/eventos';
+  static const String addEvents = '/evento/cadastro';
+  static const String instituition = '/institucoes';
+  static const String addInstituition = '/instituicao/cadastro';
+  static const String areas = '/areas';
+  static const String addArea = '/area/cadastro';
+  static const String tags = '/tags';
+  static const String addTag = '/tag/cadastro';
+  static const String certificateTypes = '/tipos-certificado';
+  static const String addCertificateType = '/tipo-certificado/cadastro';
+  static const String favoriteCourses = '/cursos-favoritos';
+
   static const String dashboard = '/dashboard';
   static const String cadastroUsuario = '/cadastro_usuario';
   static const String cadastroInstituicao = '/cadastro_instituicao';
@@ -28,12 +53,20 @@ class Routes {
 final Map<String, WidgetBuilder> routes = {
   Routes.auth: (context) => const WidgetAuthScreen(),
   Routes.login: (context) => const WidgetLogin(),
-  Routes.profile: (context) => const WidgetPerfil(),
-  Routes.addCertificate: (context) => const WidgetAddCertificate(),
+  Routes.certificates: (context) => const WidgetCertificate(),
+  Routes.user: (context) => const WidgetUser(),
+  Routes.addUser: (context) => const WidgetAddUser(),
   Routes.dashboard: (context) => const WidgetDashboard(),
-  Routes.cadastroUsuario: (context) => const WidgetCadastroUsuario(),
-  Routes.cadastroInstituicao: (context) => const WidgetCadastroInstituicao(),
-  Routes.cadastroTipoCertificado: (context) => const WidgetCadastroTipoCertificado(),
-  Routes.cadastroCategoria: (context) => const WidgetCadastroCategoria(),
-  Routes.cadastroArea: (context) => const WidgetCadastroArea(),
+  Routes.addCertificate: (context) => const WidgetAddCertificate(),
+  Routes.events: (context) => const WidgetEvent(),
+  Routes.addEvents: (context) => const WidgetAddEvent(),
+  Routes.instituition: (context) => const WidgetInstitution(),
+  Routes.addInstituition: (context) => const WidgetAddInstitution(),
+  Routes.areas: (context) => const WidgetArea(),
+  Routes.addArea: (context) => const WidgetAddArea(),
+  Routes.tags: (context) => const WidgetTag(),
+  Routes.addTag: (context) => const WidgetAddTag(),
+  Routes.certificateTypes: (context) => const WidgetCertificateType(),
+  Routes.addCertificateType: (context) => const WidgetAddCertificateType(),
+  Routes.favoriteCourses: (context) => const WidgetFavoriteCourses(),
 };
