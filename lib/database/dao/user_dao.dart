@@ -24,9 +24,13 @@ class UserDao {
       final prefs = await SharedPreferences.getInstance();
       final users = await findAll();
       
-      // Gerar ID único
       final nextId = prefs.getInt(_nextIdKey) ?? 1;
-      final newUser = user.copyWith(id: nextId);
+      final imageUrl = 'https://avatar.iran.liara.run/public/${user.name.replaceAll(' ', '')}';
+      
+      final newUser = user.copyWith(
+        id: nextId,
+        imageUrl: imageUrl,
+      );
       
       users.add(newUser);
       await _saveUsers(users);
@@ -122,9 +126,18 @@ class UserDao {
   Future<void> addSampleData() async {
     final users = await findAll();
     if (users.isEmpty) {
-      await insert(UserDto(name: 'João Silva', email: 'joao@email.com', profession: 'Professor'));
-      await insert(UserDto(name: 'Maria Santos', email: 'maria@email.com', profession: 'Aluna'));
-      await insert(UserDto(name: 'Carlos Oliveira', email: 'carlos@email.com', profession: 'Administrador'));
+      await insert(UserDto(
+        name: 'João Silva',
+        email: 'joao@email.com',
+        profession: 'Professor',
+        imageUrl: '',
+      ));
+      await insert(UserDto(
+        name: 'Maria Santos',
+        email: 'maria@email.com',
+        profession: 'Aluna',
+        imageUrl: '',
+      ));
     }
   }
 }

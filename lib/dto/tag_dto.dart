@@ -7,7 +7,7 @@ class TagDto {
     required this.name,
   });
 
-  // Construtor para criar a partir de JSON
+  // Convert from JSON
   factory TagDto.fromJson(Map<String, dynamic> json) {
     return TagDto(
       id: json['id'] as int?,
@@ -15,7 +15,7 @@ class TagDto {
     );
   }
 
-  // Método para converter para JSON
+  // Convert to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -23,7 +23,7 @@ class TagDto {
     };
   }
 
-  // Método para criar uma cópia com modificações
+  // Add copyWith method
   TagDto copyWith({
     int? id,
     String? name,
@@ -34,21 +34,25 @@ class TagDto {
     );
   }
 
-  @override
-  String toString() {
-    return 'TagDto(id: $id, name: $name)';
+  // Add toLowerCase method
+  String toLowerCase() {
+    return name.toLowerCase();
   }
+
+  // Add static fromStringList method
+  static List<TagDto> fromStringList(List<String> strings) {
+    return strings.map((str) => TagDto(name: str)).toList();
+  }
+
+  @override
+  String toString() => name;
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is TagDto &&
-        other.id == id &&
-        other.name == name;
+    return other is TagDto && other.id == id && other.name == name;
   }
 
   @override
-  int get hashCode {
-    return id.hashCode ^ name.hashCode;
-  }
+  int get hashCode => Object.hash(id, name);
 }

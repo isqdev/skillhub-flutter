@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:meu_app/app_colors.dart';
 import 'package:flutter/services.dart';
-import '../../database/dao/user_dao.dart';
-import '../../dto/user_dto.dart';
+import '../../../database/dao/user_dao.dart';
+import '../../../dto/user_dto.dart';
 
 class WidgetAddUser extends StatefulWidget {
   const WidgetAddUser({super.key});
@@ -30,6 +30,7 @@ class _WidgetAddUserState extends State<WidgetAddUser> {
           name: _nomeController.text.trim(),
           email: _emailController.text.trim(),
           profession: _profissaoController.text.trim(),
+          imageUrl: '', // This will be set by the UserDao
         );
 
         await _userDao.insert(user);

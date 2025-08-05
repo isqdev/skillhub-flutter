@@ -1,8 +1,11 @@
+import 'package:flutter/foundation.dart' show listEquals;
+
 class EventDto {
   final int? id;
   final String name;
   final String institution;
   final String description;
+  final String profession;
   final List<String> tags;
 
   const EventDto({
@@ -10,7 +13,8 @@ class EventDto {
     required this.name,
     required this.institution,
     required this.description,
-    required this.tags,
+    required this.profession,
+    this.tags = const [],
   });
 
   // Construtor para criar a partir de JSON
@@ -20,7 +24,8 @@ class EventDto {
       name: json['name'] as String,
       institution: json['institution'] as String,
       description: json['description'] as String,
-      tags: List<String>.from(json['tags'] ?? []),
+      profession: json['profession'] as String,
+      tags: (json['tags'] as List<dynamic>?)?.cast<String>() ?? [],
     );
   }
 
@@ -31,8 +36,32 @@ class EventDto {
       'name': name,
       'institution': institution,
       'description': description,
+      'profession': profession,
       'tags': tags,
     };
+  }
+
+  // Métodos para SQLite (mobile)
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'institution': institution,
+      'description': description,
+      'profession': profession,
+      'tags': tags,
+    };
+  }
+
+  factory EventDto.fromMap(Map<String, dynamic> map) {
+    return EventDto(
+      id: map['id'] as int?,
+      name: map['name'] as String,
+      institution: map['institution'] as String,
+      description: map['description'] as String,
+      profession: map['profession'] as String,
+      tags: (map['tags'] as List<dynamic>?)?.cast<String>() ?? [],
+    );
   }
 
   // Método para criar uma cópia com modificações
@@ -41,6 +70,7 @@ class EventDto {
     String? name,
     String? institution,
     String? description,
+    String? profession,
     List<String>? tags,
   }) {
     return EventDto(
@@ -48,27 +78,14 @@ class EventDto {
       name: name ?? this.name,
       institution: institution ?? this.institution,
       description: description ?? this.description,
+      profession: profession ?? this.profession,
       tags: tags ?? this.tags,
     );
   }
 
-  // Helper para converter tags de string separada por vírgula
-  factory EventDto.fromTagsString(String tagsString) {
-    final tagsList = tagsString.split(',').map((tag) => tag.trim()).toList();
-    return EventDto(
-      name: '',
-      institution: '',
-      description: '',
-      tags: tagsList,
-    );
-  }
-
-  // Helper para converter tags para string separada por vírgula
-  String get tagsAsString => tags.join(', ');
-
   @override
   String toString() {
-    return 'EventDto(id: $id, name: $name, institution: $institution, description: $description, tags: $tags)';
+    return 'EventDto(id: $id, name: $name, institution: $institution, description: $description, profession: $profession, tags: $tags)';
   }
 
   @override
@@ -79,25 +96,28 @@ class EventDto {
         other.name == name &&
         other.institution == institution &&
         other.description == description &&
-        _listEquals(other.tags, tags);
+        profession == other.profession &&
+        listEquals(tags, other.tags);
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^ 
-           name.hashCode ^ 
-           institution.hashCode ^ 
-           description.hashCode ^ 
-           tags.hashCode;
+    return id.hashCode ^
+        name.hashCode ^
+        institution.hashCode ^
+        description.hashCode ^
+        profession.hashCode ^
+        tags.hashCode;
   }
 
-  // Helper para comparar listas
-  bool _listEquals<T>(List<T>? a, List<T>? b) {
-    if (a == null) return b == null;
-    if (b == null || a.length != b.length) return false;
-    for (int index = 0; index < a.length; index += 1) {
-      if (a[index] != b[index]) return false;
-    }
-    return true;
+  // Helper method for tags
+  String tagsAsString() {
+    return tags.join(', ');
+  }
+
+  // Helper method to convert string to tags list
+  static List<String> fromTagsString(String tagsString) {
+    if (tagsString.isEmpty) return [];
+    return tagsString.split(',').map((tag) => tag.trim()).where((tag) => tag.isNotEmpty).toList();
   }
 }

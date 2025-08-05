@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:meu_app/dto/tag_dto.dart';
 import '../../dto/certificate_dto.dart';
+import 'tag_dao.dart';
+import 'institution_dao.dart';
 
 class CertificateDao {
   static const String _certificatesKey = 'certificates_list';
@@ -18,6 +21,28 @@ class CertificateDao {
     }
   }
 
+  // Buscar certificados por usuário
+  Future<List<CertificateDto>> findByUserId(int userId) async {
+    try {
+      final certificates = await findAll();
+      return certificates.where((cert) => cert.userId == userId).toList();
+    } catch (e) {
+      print('Erro ao buscar certificados por usuário: $e');
+      return [];
+    }
+  }
+
+  // Buscar certificados sem usuário associado
+  Future<List<CertificateDto>> findUnassigned() async {
+    try {
+      final certificates = await findAll();
+      return certificates.where((cert) => cert.userId == null).toList();
+    } catch (e) {
+      print('Erro ao buscar certificados não associados: $e');
+      return [];
+    }
+  }
+
   // Inserir certificado
   Future<int> insert(CertificateDto certificate) async {
     try {
@@ -28,6 +53,14 @@ class CertificateDao {
       final nextId = prefs.getInt(_nextIdKey) ?? 1;
       final newCertificate = certificate.copyWith(id: nextId);
       
+      // Save any new tags that don't exist yet
+      final tagDao = TagDao();
+      for (var tag in certificate.tags) {
+        if (tag.id == null) {
+          await tagDao.insert(tag);
+        }
+      }
+
       certificates.add(newCertificate);
       await _saveCertificates(certificates);
       await prefs.setInt(_nextIdKey, nextId + 1);
@@ -42,24 +75,103 @@ class CertificateDao {
   // Atualizar certificado
   Future<int> update(CertificateDto certificate) async {
     try {
-      if (certificate.id == null) {
-        throw Exception('ID não pode ser nulo para atualização');
-      }
-      
       final certificates = await findAll();
       final index = certificates.indexWhere((c) => c.id == certificate.id);
       
-      if (index == -1) {
-        throw Exception('Certificado não encontrado');
+      if (index != -1) {
+        // Save any new tags that don't exist yet
+        final tagDao = TagDao();
+        for (var tag in certificate.tags) {
+          if (tag.id == null) {
+            await tagDao.insert(tag);
+          }
+        }
+
+        certificates[index] = certificate;
+        await _saveCertificates(certificates);
+        return certificate.id!;
       }
       
-      certificates[index] = certificate;
-      await _saveCertificates(certificates);
-      
-      return certificate.id!;
+      throw Exception('Certificado não encontrado');
     } catch (e) {
       print('Erro ao atualizar certificado: $e');
       throw Exception('Erro ao atualizar certificado');
+    }
+  }
+
+  // Associar certificado a um usuário
+  Future<int> associateToUser(int certificateId, int userId) async {
+    try {
+      final certificates = await findAll();
+      final index = certificates.indexWhere((cert) => cert.id == certificateId);
+      
+      if (index != -1) {
+        final updatedCert = certificates[index].copyWith(userId: userId);
+        certificates[index] = updatedCert;
+        await _saveCertificates(certificates);
+        return 1;
+      }
+      return 0;
+    } catch (e) {
+      print('Erro ao associar certificado ao usuário: $e');
+      throw Exception('Erro ao associar certificado');
+    }
+  }
+
+  // Desassociar certificado de um usuário
+  Future<int> disassociateFromUser(int certificateId) async {
+    try {
+      final certificates = await findAll();
+      final index = certificates.indexWhere((cert) => cert.id == certificateId);
+      
+      if (index != -1) {
+        final updatedCert = certificates[index].copyWith(userId: null);
+        certificates[index] = updatedCert;
+        await _saveCertificates(certificates);
+        return 1;
+      }
+      return 0;
+    } catch (e) {
+      print('Erro ao desassociar certificado: $e');
+      throw Exception('Erro ao desassociar certificado');
+    }
+  }
+
+  // Contar certificados por usuário
+  Future<int> countByUserId(int userId) async {
+    try {
+      final certificates = await findByUserId(userId);
+      return certificates.length;
+    } catch (e) {
+      print('Erro ao contar certificados: $e');
+      return 0;
+    }
+  }
+
+  // Obter total de horas por usuário
+  Future<int> getTotalHoursByUserId(int userId) async {
+    try {
+      final certificates = await findByUserId(userId);
+      return certificates.fold<int>(0, (sum, certificate) => sum + certificate.hours);
+    } catch (e) {
+      print('Erro ao calcular total de horas por usuário: $e');
+      return 0;
+    }
+  }
+
+  // Buscar usuários com certificados
+  Future<List<int>> getUsersWithCertificates() async {
+    try {
+      final certificates = await findAll();
+      final userIds = certificates
+          .where((cert) => cert.userId != null)
+          .map((cert) => cert.userId!)
+          .toSet()
+          .toList();
+      return userIds;
+    } catch (e) {
+      print('Erro ao buscar usuários com certificados: $e');
+      return [];
     }
   }
 
@@ -105,16 +217,14 @@ class CertificateDao {
   }
 
   // Buscar por instituição
-  Future<List<CertificateDto>> searchByInstitution(String institution) async {
-    try {
-      final certificates = await findAll();
-      return certificates.where((certificate) => 
-        certificate.institution.toLowerCase().contains(institution.toLowerCase())
-      ).toList();
-    } catch (e) {
-      print('Erro ao buscar certificados por instituição: $e');
-      return [];
-    }
+  Future<List<CertificateDto>> findByInstitution(String institution) async {
+    final certificates = await findAll();
+    return certificates
+        .where((certificate) =>
+            certificate.institution.name.toLowerCase().contains(
+                  institution.toLowerCase(),
+                ))
+        .toList();
   }
 
   // Buscar por tipo
@@ -157,7 +267,9 @@ class CertificateDao {
   // Método privado para salvar certificados
   Future<void> _saveCertificates(List<CertificateDto> certificates) async {
     final prefs = await SharedPreferences.getInstance();
-    final certificatesJson = certificates.map((certificate) => jsonEncode(certificate.toJson())).toList();
+    final certificatesJson = certificates
+        .map((certificate) => jsonEncode(certificate.toJson()))
+        .toList();
     await prefs.setStringList(_certificatesKey, certificatesJson);
   }
 
@@ -172,27 +284,38 @@ class CertificateDao {
   Future<void> addSampleData() async {
     final certificates = await findAll();
     if (certificates.isEmpty) {
-      await insert(CertificateDto(
-        name: 'Curso de Flutter',
-        institution: 'Instituto de Tecnologia',
-        type: 'Curso',
-        hours: 40,
-        tags: ['flutter', 'mobile', 'desenvolvimento'],
-      ));
-      await insert(CertificateDto(
-        name: 'Workshop de Dart',
-        institution: 'Academia Digital',
-        type: 'Workshop',
-        hours: 16,
-        tags: ['dart', 'programação'],
-      ));
-      await insert(CertificateDto(
-        name: 'Certificação em Desenvolvimento Web',
-        institution: 'Universidade Online',
-        type: 'Certificação',
-        hours: 80,
-        tags: ['web', 'frontend', 'backend'],
-      ));
+      final institutionDao = InstitutionDao();
+      await institutionDao.addSampleData();
+      final institutions = await institutionDao.findAll();
+      
+      if (institutions.isNotEmpty) {
+        await insert(CertificateDto(
+          name: 'Curso de Flutter',
+          institution: institutions[0],
+          type: 'Curso',
+          hours: 40,
+          tags: [TagDto(name: 'flutter'), TagDto(name: 'mobile'), TagDto(name: 'desenvolvimento')],
+          userId: 1,
+        ));
+        
+        await insert(CertificateDto(
+          name: 'Minicurso de Dart',
+          institution: institutions[1],
+          type: 'Minicurso',
+          hours: 16,
+          tags: [TagDto(name: 'dart'), TagDto(name: 'programação')],
+          userId: 2,
+        ));
+        
+        await insert(CertificateDto(
+          name: 'Evento de Desenvolvimento Web',
+          institution: institutions[2],
+          type: 'Evento',
+          hours: 80,
+          tags: [TagDto(name: 'web'), TagDto(name: 'frontend'), TagDto(name: 'backend')],
+          userId: 1,
+        ));
+      }
     }
   }
 }

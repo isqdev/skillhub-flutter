@@ -1,10 +1,14 @@
+import 'tag_dto.dart';
+import 'institution_dto.dart'; // Import InstitutionDto
+
 class CertificateDto {
   final int? id;
   final String name;
-  final String institution;
+  final InstitutionDto institution; // Change from String to InstitutionDto
   final String type;
   final int hours;
-  final List<String> tags;
+  final List<TagDto> tags;
+  final int? userId;  // Certifique-se que este campo existe
 
   const CertificateDto({
     this.id,
@@ -13,6 +17,7 @@ class CertificateDto {
     required this.type,
     required this.hours,
     required this.tags,
+    this.userId,  // Adicione se não existir
   });
 
   // Constructor to create from JSON
@@ -20,10 +25,13 @@ class CertificateDto {
     return CertificateDto(
       id: json['id'] as int?,
       name: json['name'] as String,
-      institution: json['institution'] as String,
+      institution: InstitutionDto.fromJson(json['institution'] as Map<String, dynamic>),
       type: json['type'] as String,
       hours: json['hours'] as int,
-      tags: List<String>.from(json['tags'] as List),
+      userId: json['userId'] as int?,
+      tags: (json['tags'] as List<dynamic>?)
+          ?.map((tagJson) => TagDto.fromJson(tagJson as Map<String, dynamic>))
+          .toList() ?? [],
     );
   }
 
@@ -32,10 +40,11 @@ class CertificateDto {
     return {
       'id': id,
       'name': name,
-      'institution': institution,
+      'institution': institution.toJson(),
       'type': type,
       'hours': hours,
-      'tags': tags,
+      'tags': tags.map((tag) => tag.toJson()).toList(),
+      'userId': userId,  // Adicione esta linha
     };
   }
 
@@ -43,10 +52,11 @@ class CertificateDto {
   CertificateDto copyWith({
     int? id,
     String? name,
-    String? institution,
+    InstitutionDto? institution,
     String? type,
     int? hours,
-    List<String>? tags,
+    List<TagDto>? tags,
+    int? userId,
   }) {
     return CertificateDto(
       id: id ?? this.id,
@@ -55,12 +65,13 @@ class CertificateDto {
       type: type ?? this.type,
       hours: hours ?? this.hours,
       tags: tags ?? this.tags,
+      userId: userId ?? this.userId,
     );
   }
 
   @override
   String toString() {
-    return 'CertificateDto(id: $id, name: $name, institution: $institution, type: $type, hours: $hours, tags: $tags)';
+    return 'CertificateDto(id: $id, name: $name, institution: $institution, type: $type, hours: $hours, tags: $tags, userId: $userId)';
   }
 
   @override
@@ -72,7 +83,8 @@ class CertificateDto {
         other.institution == institution &&
         other.type == type &&
         other.hours == hours &&
-        other.tags == tags;
+        other.tags == tags &&
+        other.userId == userId;
   }
 
   @override
@@ -82,6 +94,7 @@ class CertificateDto {
         institution.hashCode ^
         type.hashCode ^
         hours.hashCode ^
-        tags.hashCode;
+        tags.hashCode ^
+        userId.hashCode;
   }
 }

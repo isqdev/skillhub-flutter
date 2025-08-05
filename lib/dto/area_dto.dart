@@ -27,6 +27,15 @@ class AreaDto {
     };
   }
 
+  // Métodos para SQLite (mobile)
+  Map<String, dynamic> toMap() {
+    return toJson();
+  }
+
+  factory AreaDto.fromMap(Map<String, dynamic> map) {
+    return AreaDto.fromJson(map);
+  }
+
   // Método para criar uma cópia com modificações
   AreaDto copyWith({
     int? id,

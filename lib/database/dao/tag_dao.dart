@@ -1,85 +1,117 @@
-import 'package:sqflite/sqflite.dart';
-import '../sqlite/conection.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../dto/tag_dto.dart';
-import 'base_dao.dart';
 
-class TagDao extends BaseDao<TagDto> {
-  @override
-  String get tableName => 'tags';
+class TagDao {
+  static const String _tagsKey = 'tags_list';
+  static const String _nextIdKey = 'next_tag_id';
 
-  @override
-  Future<Database> get database => ConexaoSQLite.database;
-
-  @override
-  TagDto fromMap(Map<String, dynamic> map) {
-    return TagDto(
-      id: map['id'] as int?,
-      name: map['name'] as String,
-    );
+  // Buscar todas as tags
+  Future<List<TagDto>> findAll() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final tagsJson = prefs.getStringList(_tagsKey) ?? [];
+      return tagsJson.map((json) => TagDto.fromJson(jsonDecode(json))).toList();
+    } catch (e) {
+      print('Erro ao buscar tags: $e');
+      return [];
+    }
   }
 
-  @override
-  Map<String, dynamic> toMap(TagDto entity) {
-    return {
-      'id': entity.id,
-      'name': entity.name,
-    };
+  // Inserir tag
+  Future<int> insert(TagDto tag) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final tags = await findAll();
+      
+      // Gerar ID único
+      final nextId = prefs.getInt(_nextIdKey) ?? 1;
+      final newTag = tag.copyWith(id: nextId);
+      
+      tags.add(newTag);
+      await _saveTags(tags);
+      await prefs.setInt(_nextIdKey, nextId + 1);
+      
+      return nextId;
+    } catch (e) {
+      print('Erro ao inserir tag: $e');
+      throw Exception('Erro ao salvar tag');
+    }
   }
 
-  // Métodos específicos para Tag
+  // Atualizar tag
+  Future<int> update(TagDto tag) async {
+    try {
+      final tags = await findAll();
+      final index = tags.indexWhere((t) => t.id == tag.id);
+      
+      if (index != -1) {
+        tags[index] = tag;
+        await _saveTags(tags);
+        return 1;
+      }
+      return 0;
+    } catch (e) {
+      print('Erro ao atualizar tag: $e');
+      throw Exception('Erro ao atualizar tag');
+    }
+  }
+
+  // Deletar tag
+  Future<int> delete(int id) async {
+    try {
+      final tags = await findAll();
+      final initialLength = tags.length;
+      tags.removeWhere((tag) => tag.id == id);
+      await _saveTags(tags);
+      return initialLength - tags.length;
+    } catch (e) {
+      print('Erro ao deletar tag: $e');
+      throw Exception('Erro ao deletar tag');
+    }
+  }
+
+  // Buscar por nome
   Future<TagDto?> findByName(String name) async {
-    final db = await database;
-    final maps = await db.query(
-      tableName,
-      where: 'name = ?',
-      whereArgs: [name],
-    );
-    
-    if (maps.isEmpty) return null;
-    return fromMap(maps.first);
+    try {
+      final tags = await findAll();
+      return tags.cast<TagDto?>().firstWhere(
+        (tag) => tag?.name == name,
+        orElse: () => null,
+      );
+    } catch (e) {
+      print('Erro ao buscar tag por nome: $e');
+      return null;
+    }
   }
 
-  Future<List<TagDto>> searchByName(String name) async {
-    final db = await database;
-    final maps = await db.query(
-      tableName,
-      where: 'name LIKE ?',
-      whereArgs: ['%$name%'],
-    );
-    return maps.map((map) => fromMap(map)).toList();
-  }
-
+  // Verificar se nome existe
   Future<bool> nameExists(String name) async {
     final tag = await findByName(name);
     return tag != null;
   }
 
-  Future<List<String>> getAllTagNames() async {
-    final db = await database;
-    final maps = await db.rawQuery('SELECT name FROM $tableName ORDER BY name');
-    return maps.map((map) => map['name'] as String).toList();
+  // Método privado para salvar tags
+  Future<void> _saveTags(List<TagDto> tags) async {
+    final prefs = await SharedPreferences.getInstance();
+    final tagsJson = tags.map((tag) => jsonEncode(tag.toJson())).toList();
+    await prefs.setStringList(_tagsKey, tagsJson);
   }
 
-  Future<TagDto> findOrCreate(String name) async {
-    TagDto? existingTag = await findByName(name);
-    
-    if (existingTag != null) {
-      return existingTag;
-    }
-    
-    final newTag = TagDto(name: name);
-    final id = await insert(newTag);
-    return newTag.copyWith(id: id);
+  // Limpar todos os dados
+  Future<void> clearAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_tagsKey);
+    await prefs.remove(_nextIdKey);
   }
 
-  Future<List<TagDto>> findOrCreateMultiple(List<String> names) async {
-    List<TagDto> tags = [];
-    
-    for (String name in names) {
-      final tag = await findOrCreate(name.trim());
-      tags.add(tag);
+  // Método para adicionar dados de exemplo
+  Future<void> addSampleData() async {
+    final tags = await findAll();
+    if (tags.isEmpty) {
+      await insert(TagDto(name: 'Flutter'));
+      await insert(TagDto(name: 'Dart'));
+      await insert(TagDto(name: 'Mobile'));
     }
-    
-    return tags;
   }
 }

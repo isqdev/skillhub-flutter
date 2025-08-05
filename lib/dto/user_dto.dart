@@ -3,12 +3,14 @@ class UserDto {
   final String name;
   final String email;
   final String profession;
+  final String imageUrl;
 
   const UserDto({
     this.id,
     required this.name,
     required this.email,
     required this.profession,
+    required this.imageUrl,
   });
 
   // Construtor para criar a partir de JSON
@@ -18,6 +20,7 @@ class UserDto {
       name: json['name'] as String,
       email: json['email'] as String,
       profession: json['profession'] as String,
+      imageUrl: json['imageUrl'] as String,
     );
   }
 
@@ -28,6 +31,7 @@ class UserDto {
       'name': name,
       'email': email,
       'profession': profession,
+      'imageUrl': imageUrl,
     };
   }
 
@@ -38,6 +42,7 @@ class UserDto {
       'name': name,
       'email': email,
       'profession': profession,
+      'imageUrl': imageUrl,
     };
   }
 
@@ -47,6 +52,7 @@ class UserDto {
       name: map['name'] as String,
       email: map['email'] as String,
       profession: map['profession'] as String,
+      imageUrl: map['imageUrl'] as String,
     );
   }
 
@@ -56,18 +62,20 @@ class UserDto {
     String? name,
     String? email,
     String? profession,
+    String? imageUrl,
   }) {
     return UserDto(
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
       profession: profession ?? this.profession,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 
   @override
   String toString() {
-    return 'UserDto(id: $id, name: $name, email: $email, profession: $profession)';
+    return 'UserDto(id: $id, name: $name, email: $email, profession: $profession, imageUrl: $imageUrl)';
   }
 
   @override
@@ -77,11 +85,12 @@ class UserDto {
         other.id == id &&
         other.name == name &&
         other.email == email &&
-        other.profession == profession;
+        other.profession == profession &&
+        other.imageUrl == imageUrl;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^ name.hashCode ^ email.hashCode ^ profession.hashCode;
+    return id.hashCode ^ name.hashCode ^ email.hashCode ^ profession.hashCode ^ imageUrl.hashCode;
   }
 }
