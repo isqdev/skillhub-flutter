@@ -79,51 +79,88 @@ class InstitutionDao {
 
   // Método para inicializar dados padrão
   Future<void> addSampleData() async {
-    try {
-      final institutions = await findAll();
-      if (institutions.isEmpty) {
-        await _areaDao.addSampleData(); // First ensure areas exist
-        
-        final areas = await _areaDao.findAll();
-        final tecArea = areas.firstWhere(
-          (a) => a.name.toLowerCase().contains('tecnologia'),
-          orElse: () => throw Exception('Área Tecnologia não encontrada'),
-        );
-        final eduArea = areas.firstWhere(
-          (a) => a.name.toLowerCase().contains('educação'),
-          orElse: () => throw Exception('Área Educação não encontrada'),
-        );
+  try {
+    final institutions = await findAll();
+    if (institutions.isEmpty) {
+      final defaultInstitutions = [
+        InstitutionDto(
+          name: 'Universidade Federal de Minas Gerais',
+          state: 'Minas Gerais',
+          city: 'Belo Horizonte',
+          area: 'Educação',
+          type: 'Pública',
+        ),
+        InstitutionDto(
+          name: 'Instituto Tecnológico de Aeronáutica',
+          state: 'São Paulo',
+          city: 'São José dos Campos',
+          area: 'Tecnologia',
+          type: 'Pública',
+        ),
+        InstitutionDto(
+          name: 'SENAI',
+          state: 'Rio de Janeiro',
+          city: 'Rio de Janeiro',
+          area: 'Educação',
+          type: 'Sistema S',
+        ),
+        InstitutionDto(
+          name: 'Universidade de São Paulo',
+          state: 'São Paulo',
+          city: 'São Paulo',
+          area: 'Educação',
+          type: 'Pública',
+        ),
+        InstitutionDto(
+          name: 'Pontifícia Universidade Católica do Rio de Janeiro',
+          state: 'Rio de Janeiro',
+          city: 'Rio de Janeiro',
+          area: 'Educação',
+          type: 'Privada',
+        ),
+        InstitutionDto(
+          name: 'FIAP',
+          state: 'São Paulo',
+          city: 'São Paulo',
+          area: 'Tecnologia',
+          type: 'Privada',
+        ),
+        InstitutionDto(
+          name: 'Universidade Federal do Rio de Janeiro',
+          state: 'Rio de Janeiro',
+          city: 'Rio de Janeiro',
+          area: 'Educação',
+          type: 'Pública',
+        ),
+        InstitutionDto(
+          name: 'Instituto Federal de São Paulo',
+          state: 'São Paulo',
+          city: 'São Paulo',
+          area: 'Educação',
+          type: 'Pública',
+        ),
+        InstitutionDto(
+          name: 'Udemy',
+          state: 'Nacional',
+          city: 'Online',
+          area: 'Educação',
+          type: 'Privada',
+        ),
+        InstitutionDto(
+          name: 'Coursera',
+          state: 'Internacional',
+          city: 'Online',
+          area: 'Educação',
+          type: 'Privada',
+        ),
+      ];
 
-        final defaultInstitutions = [
-          InstitutionDto(
-            name: 'Universidade Federal de Minas Gerais',
-            state: 'Minas Gerais',
-            city: 'Belo Horizonte',
-            area: eduArea.name,
-            type: 'Pública',
-          ),
-          InstitutionDto(
-            name: 'Instituto Tecnológico de Aeronáutica',
-            state: 'São Paulo',
-            city: 'São José dos Campos',
-            area: tecArea.name,
-            type: 'Pública',
-          ),
-          InstitutionDto(
-            name: 'SENAI',
-            state: 'Rio de Janeiro',
-            city: 'Rio de Janeiro',
-            area: eduArea.name,
-            type: 'Sistema S',
-          ),
-        ];
-
-        for (var institution in defaultInstitutions) {
-          await insert(institution);
-        }
+      for (var institution in defaultInstitutions) {
+        await insert(institution);
       }
-    } catch (e) {
-      print('Erro ao adicionar dados de exemplo: $e');
     }
+  } catch (e) {
+    print('Erro ao adicionar dados de exemplo: $e');
   }
+}
 }

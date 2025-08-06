@@ -26,11 +26,18 @@ class _WidgetAddUserState extends State<WidgetAddUser> {
       });
 
       try {
+        // Gerar URL da imagem de perfil baseada no nome
+        final nameParts = _nomeController.text.trim().split(' ');
+        final firstName = nameParts.isNotEmpty ? nameParts[0] : '';
+        final lastName = nameParts.length > 1 ? nameParts[1] : '';
+        final username = firstName + (lastName.isNotEmpty ? '+$lastName' : '');
+        final imageUrl = 'https://avatar.iran.liara.run/username?username=$username';
+
         final user = UserDto(
           name: _nomeController.text.trim(),
           email: _emailController.text.trim(),
           profession: _profissaoController.text.trim(),
-          imageUrl: '', // This will be set by the UserDao
+          imageUrl: imageUrl, // URL gerada baseada no nome
         );
 
         await _userDao.insert(user);

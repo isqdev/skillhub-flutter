@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:meu_app/app_colors.dart';
-import 'package:meu_app/database/dao/institution_dao.dart';
 import '../../../database/dao/event_dao.dart';
 import '../../../dto/event_dto.dart';
-import '../../components/institution_dropdown.dart';
 import '../../../dto/institution_dto.dart';
+import '../../../database/dao/institution_dao.dart';
 
 class WidgetAddEvent extends StatefulWidget {
   const WidgetAddEvent({super.key});
@@ -17,28 +16,10 @@ class _WidgetAddEventState extends State<WidgetAddEvent> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
-  final TextEditingController _tagsController = TextEditingController();
   final EventDao _eventDao = EventDao();
   bool _isLoading = false;
 
   InstitutionDto? _selectedInstitution;
-  final InstitutionDao _institutionDao = InstitutionDao();
-  List<InstitutionDto> _institutions = [];
-  bool _isLoadingInstitutions = true;
-
-  Future<void> _loadInstitutions() async {
-    try {
-      final institutions = await _institutionDao.findAll();
-      setState(() {
-        _institutions = institutions;
-        _isLoadingInstitutions = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoadingInstitutions = false;
-      });
-    }
-  }
 
   Future<void> _saveEvent() async {
     if (_formKey.currentState!.validate()) {
@@ -49,10 +30,9 @@ class _WidgetAddEventState extends State<WidgetAddEvent> {
       try {
         final event = EventDto(
           name: _nomeController.text,
-          institution: _selectedInstitution!.name, // Use the name property
+          institution: _selectedInstitution!.name,
           description: _descricaoController.text,
-          profession: 'Event', // Default profession for events
-          tags: EventDto.fromTagsString(_tagsController.text),
+          profession: 'Event',
         );
 
         await _eventDao.insert(event);
@@ -83,12 +63,6 @@ class _WidgetAddEventState extends State<WidgetAddEvent> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _loadInstitutions();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -116,6 +90,7 @@ class _WidgetAddEventState extends State<WidgetAddEvent> {
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                       labelText: 'Nome do evento',
+                      labelStyle: TextStyle(color: AppColors.white),
                     ),
                     validator: (value) =>
                         value == null || value.isEmpty ? 'Campo obrigatório' : null,
@@ -124,33 +99,20 @@ class _WidgetAddEventState extends State<WidgetAddEvent> {
                 // Instituição
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: _isLoadingInstitutions
-                      ? Container(
-                          height: 56,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: AppColors.gray500),
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(AppColors.teal),
-                            ),
-                          ),
-                        )
-                      : InstitutionDropdown(
-                          value: _selectedInstitution,
-                          onChanged: (InstitutionDto? newValue) {
-                            setState(() {
-                              _selectedInstitution = newValue;
-                            });
-                          },
-                          validator: (value) {
-                            if (value == null) {
-                              return 'Por favor, selecione uma instituição';
-                            }
-                            return null;
-                          },
-                        ),
+                  child: InstitutionDropdown(
+                    value: _selectedInstitution,
+                    onChanged: (InstitutionDto? newValue) {
+                      setState(() {
+                        _selectedInstitution = newValue;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Por favor, selecione uma instituição';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
                 // Descrição
                 Padding(
@@ -164,24 +126,10 @@ class _WidgetAddEventState extends State<WidgetAddEvent> {
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                       labelText: 'Descrição',
+                      labelStyle: TextStyle(color: AppColors.white),
                     ),
                     validator: (value) =>
                         value == null || value.isEmpty ? 'Campo obrigatório' : null,
-                  ),
-                ),
-                // Tags
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: TextFormField(
-                    style: TextStyle(color: AppColors.white),
-                    controller: _tagsController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      labelText: 'Tags',
-                      hintText: 'Ex: tecnologia, programação, flutter',
-                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -215,7 +163,90 @@ class _WidgetAddEventState extends State<WidgetAddEvent> {
   void dispose() {
     _nomeController.dispose();
     _descricaoController.dispose();
-    _tagsController.dispose();
     super.dispose();
+  }
+}
+
+// Widget InstitutionDropdown personalizado para este arquivo
+class InstitutionDropdown extends StatefulWidget {
+  final InstitutionDto? value;
+  final ValueChanged<InstitutionDto?> onChanged;
+  final String? Function(InstitutionDto?)? validator;
+
+  const InstitutionDropdown({
+    Key? key,
+    this.value,
+    required this.onChanged,
+    this.validator,
+  }) : super(key: key);
+
+  @override
+  State<InstitutionDropdown> createState() => _InstitutionDropdownState();
+}
+
+class _InstitutionDropdownState extends State<InstitutionDropdown> {
+  final InstitutionDao _institutionDao = InstitutionDao();
+  List<InstitutionDto> _institutions = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInstitutions();
+  }
+
+  Future<void> _loadInstitutions() async {
+    try {
+      final institutions = await _institutionDao.findAll();
+      setState(() {
+        _institutions = institutions;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _isLoading
+        ? Container(
+            height: 56,
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.gray500),
+              borderRadius: BorderRadius.circular(20.0),
+            ),
+            child: Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.teal),
+              ),
+            ),
+          )
+        : DropdownButtonFormField<InstitutionDto>(
+            value: widget.value,
+            decoration: InputDecoration(
+              labelText: 'Instituição',
+              labelStyle: TextStyle(color: AppColors.white),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0),
+                borderSide: BorderSide(color: AppColors.gray500),
+              ),
+            ),
+            dropdownColor: AppColors.gray500,
+            style: TextStyle(color: AppColors.white),
+            items: _institutions.map((InstitutionDto institution) {
+              return DropdownMenuItem<InstitutionDto>(
+                value: institution,
+                child: Text(institution.name),
+              );
+            }).toList(),
+            onChanged: widget.onChanged,
+            validator: widget.validator,
+          );
   }
 }

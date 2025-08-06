@@ -262,10 +262,43 @@ class UserCard extends StatelessWidget {
             child: CircleAvatar(
               radius: 20,
               backgroundColor: AppColors.teal,
-              backgroundImage: NetworkImage(user.imageUrl),
-              onBackgroundImageError: (exception, stackTrace) {
-                // You can handle the error here, e.g., log it or set a state, but do not return a widget.
-              },
+              child: user.imageUrl.isNotEmpty
+                  ? ClipOval(
+                      child: Image.network(
+                        user.imageUrl,
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          // Fallback para ícone se a imagem falhar
+                          return Icon(
+                            Icons.person,
+                            color: AppColors.white,
+                            size: 24,
+                          );
+                        },
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                              strokeWidth: 2,
+                              color: AppColors.white,
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  : Icon(
+                      Icons.person,
+                      color: AppColors.white,
+                      size: 24,
+                    ),
             ),
           ),
           Expanded(

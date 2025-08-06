@@ -25,7 +25,13 @@ class UserDao {
       final users = await findAll();
       
       final nextId = prefs.getInt(_nextIdKey) ?? 1;
-      final imageUrl = 'https://avatar.iran.liara.run/public/${user.name.replaceAll(' ', '')}';
+      
+      // Gerar URL da imagem correta
+      final nameParts = user.name.trim().split(' ');
+      final firstName = nameParts.isNotEmpty ? nameParts[0] : '';
+      final lastName = nameParts.length > 1 ? nameParts[1] : '';
+      final username = firstName + (lastName.isNotEmpty ? '+$lastName' : '');
+      final imageUrl = 'https://avatar.iran.liara.run/username?username=$username';
       
       final newUser = user.copyWith(
         id: nextId,
@@ -127,16 +133,28 @@ class UserDao {
     final users = await findAll();
     if (users.isEmpty) {
       await insert(UserDto(
-        name: 'João Silva',
-        email: 'joao@email.com',
+        name: 'Arthur Teruel',
+        email: 'art@email.com',
         profession: 'Professor',
-        imageUrl: '',
+        imageUrl: 'https://avatar.iran.liara.run/username?username=Arthur+Teruel',
       ));
       await insert(UserDto(
-        name: 'Maria Santos',
-        email: 'maria@email.com',
+        name: 'Gregory Soares',
+        email: 'greg@email.com',
+        profession: 'Aluno',
+        imageUrl: 'https://avatar.iran.liara.run/username?username=Gregory+Soares',
+      ));
+      await insert(UserDto(
+        name: 'Leandro Menoni',
+        email: 'menoni@email.com',
+        profession: 'Aluno',
+        imageUrl: 'https://avatar.iran.liara.run/username?username=Leandro+Menoni',
+      ));
+      await insert(UserDto(
+        name: 'Pedro Lino',
+        email: 'menoni@email.com',
         profession: 'Aluna',
-        imageUrl: '',
+        imageUrl: 'https://avatar.iran.liara.run/username?username=Pedro+Lino',
       ));
     }
   }

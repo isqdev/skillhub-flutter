@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:meu_app/dto/index.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:meu_app/dto/tag_dto.dart';
 import '../../dto/certificate_dto.dart';
@@ -285,36 +286,291 @@ class CertificateDao {
     final certificates = await findAll();
     if (certificates.isEmpty) {
       final institutionDao = InstitutionDao();
+      final tagDao = TagDao();
+      
       await institutionDao.addSampleData();
+      await tagDao.addSampleData();
+      
       final institutions = await institutionDao.findAll();
       
       if (institutions.isNotEmpty) {
-        await insert(CertificateDto(
-          name: 'Curso de Flutter',
-          institution: institutions[0],
-          type: 'Curso',
-          hours: 40,
-          tags: [TagDto(name: 'flutter'), TagDto(name: 'mobile'), TagDto(name: 'desenvolvimento')],
-          userId: 1,
-        ));
-        
-        await insert(CertificateDto(
-          name: 'Minicurso de Dart',
-          institution: institutions[1],
-          type: 'Minicurso',
-          hours: 16,
-          tags: [TagDto(name: 'dart'), TagDto(name: 'programação')],
-          userId: 2,
-        ));
-        
-        await insert(CertificateDto(
-          name: 'Evento de Desenvolvimento Web',
-          institution: institutions[2],
-          type: 'Evento',
-          hours: 80,
-          tags: [TagDto(name: 'web'), TagDto(name: 'frontend'), TagDto(name: 'backend')],
-          userId: 1,
-        ));
+        // Buscar tags existentes ao invés de criar novas
+        final flutterTag = await tagDao.findByName('Flutter');
+        final mobileTag = await tagDao.findByName('Mobile');
+        final desenvolvimentoTag = await tagDao.findByName('Desenvolvimento');
+        final dartTag = await tagDao.findByName('Dart');
+        final programacaoTag = await tagDao.findByName('Programação');
+        final webTag = await tagDao.findByName('Web');
+        final frontendTag = await tagDao.findByName('Frontend');
+        final backendTag = await tagDao.findByName('Backend');
+        final reactTag = await tagDao.findByName('React');
+        final vueTag = await tagDao.findByName('Vue.js');
+        final angularTag = await tagDao.findByName('Angular');
+        final nodeTag = await tagDao.findByName('Node.js');
+        final pythonTag = await tagDao.findByName('Python');
+        final javaTag = await tagDao.findByName('Java');
+        final jsTag = await tagDao.findByName('JavaScript');
+        final tsTag = await tagDao.findByName('TypeScript');
+        final uiuxTag = await tagDao.findByName('UI/UX');
+        final designTag = await tagDao.findByName('Design');
+        final dataTag = await tagDao.findByName('Data Science');
+        final mlTag = await tagDao.findByName('Machine Learning');
+
+        // 30 certificados variados
+        final certificatesData = [
+          {
+            'name': 'Curso Completo de Flutter',
+            'institution': institutions[0],
+            'type': 'Curso',
+            'hours': 120,
+            'tags': [flutterTag, dartTag, mobileTag, desenvolvimentoTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 1,
+          },
+          {
+            'name': 'React Native para Iniciantes',
+            'institution': institutions[1],
+            'type': 'Curso',
+            'hours': 80,
+            'tags': [reactTag, mobileTag, jsTag, frontendTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 2,
+          },
+          {
+            'name': 'Python para Data Science',
+            'institution': institutions[2],
+            'type': 'Certificação',
+            'hours': 200,
+            'tags': [pythonTag, dataTag, mlTag, programacaoTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 1,
+          },
+          {
+            'name': 'Angular Avançado',
+            'institution': institutions[3],
+            'type': 'Curso',
+            'hours': 60,
+            'tags': [angularTag, frontendTag, tsTag, webTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 2,
+          },
+          {
+            'name': 'Node.js e Express',
+            'institution': institutions[4],
+            'type': 'Workshop',
+            'hours': 40,
+            'tags': [nodeTag, backendTag, jsTag, webTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 1,
+          },
+          {
+            'name': 'Vue.js Fundamentals',
+            'institution': institutions[5],
+            'type': 'Curso',
+            'hours': 50,
+            'tags': [vueTag, frontendTag, jsTag, webTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 2,
+          },
+          {
+            'name': 'Java Spring Boot',
+            'institution': institutions[6],
+            'type': 'Certificação',
+            'hours': 160,
+            'tags': [javaTag, backendTag, webTag, programacaoTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 1,
+          },
+          {
+            'name': 'Design Thinking e UX',
+            'institution': institutions[7],
+            'type': 'Workshop',
+            'hours': 30,
+            'tags': [uiuxTag, designTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 2,
+          },
+          {
+            'name': 'TypeScript Essentials',
+            'institution': institutions[8],
+            'type': 'Curso',
+            'hours': 35,
+            'tags': [tsTag, jsTag, webTag, programacaoTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 1,
+          },
+          {
+            'name': 'Machine Learning com Python',
+            'institution': institutions[9],
+            'type': 'Certificação',
+            'hours': 180,
+            'tags': [mlTag, pythonTag, dataTag, programacaoTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 2,
+          },
+          {
+            'name': 'Desenvolvimento Web Full Stack',
+            'institution': institutions[0],
+            'type': 'Bootcamp',
+            'hours': 300,
+            'tags': [webTag, frontendTag, backendTag, jsTag, reactTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 1,
+          },
+          {
+            'name': 'Mobile Development com Flutter',
+            'institution': institutions[1],
+            'type': 'Especialização',
+            'hours': 250,
+            'tags': [flutterTag, dartTag, mobileTag, desenvolvimentoTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 2,
+          },
+          {
+            'name': 'React Hooks e Context API',
+            'institution': institutions[2],
+            'type': 'Curso',
+            'hours': 45,
+            'tags': [reactTag, frontendTag, jsTag, webTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 1,
+          },
+          {
+            'name': 'Backend com Node.js e MongoDB',
+            'institution': institutions[3],
+            'type': 'Curso',
+            'hours': 90,
+            'tags': [nodeTag, backendTag, jsTag, webTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 2,
+          },
+          {
+            'name': 'UI Design Moderno',
+            'institution': institutions[4],
+            'type': 'Workshop',
+            'hours': 25,
+            'tags': [designTag, uiuxTag, frontendTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 1,
+          },
+          {
+            'name': 'DevOps com Docker e Kubernetes',
+            'institution': institutions[5],
+            'type': 'Certificação',
+            'hours': 140,
+            'tags': [backendTag, desenvolvimentoTag, programacaoTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 2,
+          },
+          {
+            'name': 'Algoritmos e Estruturas de Dados',
+            'institution': institutions[6],
+            'type': 'Curso',
+            'hours': 100,
+            'tags': [programacaoTag, javaTag, pythonTag, desenvolvimentoTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 1,
+          },
+          {
+            'name': 'Progressive Web Apps',
+            'institution': institutions[7],
+            'type': 'Workshop',
+            'hours': 20,
+            'tags': [webTag, frontendTag, jsTag, mobileTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 2,
+          },
+          {
+            'name': 'Análise de Dados com Python',
+            'institution': institutions[8],
+            'type': 'Curso',
+            'hours': 75,
+            'tags': [pythonTag, dataTag, programacaoTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 1,
+          },
+          {
+            'name': 'GraphQL e Apollo',
+            'institution': institutions[9],
+            'type': 'Curso',
+            'hours': 55,
+            'tags': [backendTag, webTag, jsTag, desenvolvimentoTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 2,
+          },
+          {
+            'name': 'Micro Frontend Architecture',
+            'institution': institutions[0],
+            'type': 'Especialização',
+            'hours': 85,
+            'tags': [frontendTag, webTag, reactTag, angularTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 1,
+          },
+          {
+            'name': 'Cybersecurity Fundamentals',
+            'institution': institutions[1],
+            'type': 'Certificação',
+            'hours': 120,
+            'tags': [backendTag, desenvolvimentoTag, programacaoTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 2,
+          },
+          {
+            'name': 'Blockchain Development',
+            'institution': institutions[2],
+            'type': 'Curso',
+            'hours': 110,
+            'tags': [desenvolvimentoTag, programacaoTag, webTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 1,
+          },
+          {
+            'name': 'AWS Cloud Practitioner',
+            'institution': institutions[3],
+            'type': 'Certificação',
+            'hours': 95,
+            'tags': [backendTag, webTag, desenvolvimentoTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 2,
+          },
+          {
+            'name': 'Selenium WebDriver',
+            'institution': institutions[4],
+            'type': 'Curso',
+            'hours': 65,
+            'tags': [javaTag, programacaoTag, webTag, desenvolvimentoTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 1,
+          },
+          {
+            'name': 'Agile e Scrum Master',
+            'institution': institutions[5],
+            'type': 'Certificação',
+            'hours': 40,
+            'tags': [desenvolvimentoTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 2,
+          },
+          {
+            'name': 'Firebase para Mobile',
+            'institution': institutions[6],
+            'type': 'Workshop',
+            'hours': 30,
+            'tags': [mobileTag, flutterTag, backendTag, desenvolvimentoTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 1,
+          },
+          {
+            'name': 'Next.js e Server-Side Rendering',
+            'institution': institutions[7],
+            'type': 'Curso',
+            'hours': 70,
+            'tags': [reactTag, frontendTag, webTag, jsTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 2,
+          },
+          {
+            'name': 'Game Development com Unity',
+            'institution': institutions[8],
+            'type': 'Curso',
+            'hours': 150,
+            'tags': [desenvolvimentoTag, programacaoTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 1,
+          },
+          {
+            'name': 'REST API Design Best Practices',
+            'institution': institutions[9],
+            'type': 'Workshop',
+            'hours': 35,
+            'tags': [backendTag, webTag, desenvolvimentoTag, nodeTag].where((t) => t != null).cast<TagDto>().toList(),
+            'userId': 2,
+          },
+        ];
+
+        // Inserir todos os certificados
+        for (var certData in certificatesData) {
+          await insert(CertificateDto(
+            name: certData['name'] as String,
+            institution: certData['institution'] as InstitutionDto,
+            type: certData['type'] as String,
+            hours: certData['hours'] as int,
+            tags: certData['tags'] as List<TagDto>,
+            userId: certData['userId'] as int,
+          ));
+        }
       }
     }
   }

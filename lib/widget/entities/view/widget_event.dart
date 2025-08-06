@@ -287,6 +287,7 @@ class EventCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Nome do evento
                 Text(
                   event.name,
                   style: TextStyle(
@@ -296,34 +297,59 @@ class EventCard extends StatelessWidget {
                   ),
                   textAlign: TextAlign.left,
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: 8),
+                
+                // Instituição como texto simples
                 Text(
                   event.institution,
-                  style: TextStyle(color: AppColors.white, fontSize: 14),
+                  style: TextStyle(
+                    color: AppColors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
                   textAlign: TextAlign.left,
                 ),
-                SizedBox(height: 4),
-                if (event.tags.isNotEmpty)
-                  Wrap(
-                    spacing: 4,
-                    runSpacing: 4,
-                    children: event.tags.take(3).map((tag) {
-                      return Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: AppColors.gray500,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          tag.trim(),
-                          style: TextStyle(
-                            color: AppColors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
+                SizedBox(height: 8),
+                
+                // Descrição do evento
+                if (event.description.isNotEmpty)
+                  Text(
+                    event.description,
+                    style: TextStyle(
+                      color: AppColors.white.withOpacity(0.8),
+                      fontSize: 13,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    textAlign: TextAlign.left,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                
+                // Tags (se existirem - removidas conforme solicitado anteriormente)
+                if (event.tags != null && event.tags.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Wrap(
+                      spacing: 4,
+                      runSpacing: 4,
+                      children: event.tags.take(3).map((tag) {
+                        return Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppColors.gray500.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                        ),
-                      );
-                    }).toList(),
+                          child: Text(
+                            tag.trim(),
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
               ],
             ),

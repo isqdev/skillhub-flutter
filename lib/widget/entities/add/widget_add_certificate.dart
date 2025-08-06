@@ -220,28 +220,40 @@ class _WidgetAddCertificateState extends State<WidgetAddCertificate> {
                         ),
                       )
                     : DropdownButtonFormField<int>(
-                        value: _selectedUserId,
-                        decoration: InputDecoration(
-                          labelText: 'Usuário',
-                          border: OutlineInputBorder(),
+                      value: _selectedUserId,
+                      decoration: InputDecoration(
+                        labelText: 'Usuário',
+                        labelStyle: TextStyle(color: AppColors.white),
+                        border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
                         ),
-                        items: _users.map((user) {
-                          return DropdownMenuItem<int>(
-                            value: user.id,
-                            child: Text(user.name),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedUserId = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null) {
-                            return 'Por favor, selecione um usuário';
-                          }
-                          return null;
-                        },
+                        enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                        borderSide: BorderSide(color: AppColors.gray500),
+                        ),
+                      ),
+                      dropdownColor: AppColors.gray500,
+                      style: TextStyle(color: AppColors.white),
+                      items: _users.map((user) {
+                        return DropdownMenuItem<int>(
+                        value: user.id,
+                        child: Text(
+                          user.name,
+                          style: TextStyle(color: AppColors.white),
+                        ),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                        _selectedUserId = value;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null) {
+                        return 'Por favor, selecione um usuário';
+                        }
+                        return null;
+                      },
                       ),
               ),
 

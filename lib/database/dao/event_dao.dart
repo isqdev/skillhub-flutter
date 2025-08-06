@@ -25,17 +25,6 @@ class EventDao {
   // Inserir evento
   Future<int> insert(EventDto event) async {
     try {
-      // Create an InstitutionDto from the event's institution name
-      await _institutionDao.insert(
-        InstitutionDto(
-          name: event.institution,
-          state: '',  // Add default values or get them from somewhere
-          city: '',
-          type: '',
-          area: '',
-        )
-      );
-      
       final prefs = await SharedPreferences.getInstance();
       final events = await findAll();
       
@@ -132,25 +121,45 @@ class EventDao {
     try {
       final events = await findAll();
       if (events.isEmpty) {
-        await _institutionDao.addSampleData(); // This method exists now
-        await insert(EventDto(
-          name: 'Flutter Dev Week',
-          institution: 'Google',
-          description: 'Semana de desenvolvimento Flutter',
-          profession: 'Desenvolvimento'
-        ));
-        await insert(EventDto(
-          name: 'Workshop UX/UI',
-          institution: 'Microsoft',
-          description: 'Workshop de design de interfaces',
-          profession: 'Design'
-        ));
-        await insert(EventDto(
-          name: 'Hackathon 2025',
-          institution: 'IF Campus',
-          description: 'Maratona de programação',
-          profession: 'Desenvolvimento'
-        ));
+        // Garantir que instituições existam primeiro
+        await _institutionDao.addSampleData();
+        
+        // Buscar instituições existentes do banco de dados
+        final institutions = await _institutionDao.findAll();
+        
+        if (institutions.isNotEmpty) {
+          // Usar instituições reais do banco de dados
+          await insert(EventDto(
+            name: 'Flutter Dev Week',
+            institution: institutions[0].name, // UFMG
+            description: 'Semana de desenvolvimento Flutter',
+            profession: 'Desenvolvimento'
+          ));
+          
+          await insert(EventDto(
+            name: 'Workshop UX/UI',
+            institution: institutions[1].name, // ITA
+            description: 'Workshop de design de interfaces',
+            profession: 'Design'
+          ));
+          
+          await insert(EventDto(
+            name: 'Hackathon 2025',
+            institution: institutions[2].name, // SENAI
+            description: 'Maratona de programação',
+            profession: 'Desenvolvimento'
+          ));
+          
+          // Adicionar mais eventos se houver mais instituições
+          if (institutions.length > 3) {
+            await insert(EventDto(
+              name: 'Semana da Tecnologia',
+              institution: institutions[0].name,
+              description: 'Evento anual de tecnologia e inovação',
+              profession: 'Tecnologia'
+            ));
+          }
+        }
       }
     } catch (e) {
       print('Erro ao adicionar dados de exemplo: $e');

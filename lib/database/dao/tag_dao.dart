@@ -112,6 +112,23 @@ class TagDao {
       await insert(TagDto(name: 'Flutter'));
       await insert(TagDto(name: 'Dart'));
       await insert(TagDto(name: 'Mobile'));
+      await insert(TagDto(name: 'Desenvolvimento'));
+      await insert(TagDto(name: 'Programação'));
+      await insert(TagDto(name: 'Web'));
+      await insert(TagDto(name: 'Backend'));
+      await insert(TagDto(name: 'Frontend'));
+      await insert(TagDto(name: 'React'));
+      await insert(TagDto(name: 'Vue.js'));
+      await insert(TagDto(name: 'Angular'));
+      await insert(TagDto(name: 'Node.js'));
+      await insert(TagDto(name: 'Python'));
+      await insert(TagDto(name: 'Java'));
+      await insert(TagDto(name: 'JavaScript'));
+      await insert(TagDto(name: 'TypeScript'));
+      await insert(TagDto(name: 'UI/UX'));
+      await insert(TagDto(name: 'Design'));
+      await insert(TagDto(name: 'Data Science'));
+      await insert(TagDto(name: 'Machine Learning'));
     }
   }
 }
