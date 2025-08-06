@@ -1,3 +1,5 @@
+# Total: 28 pontos
+
 ### Cadastro Simples - 3
 
 | feito | Entidade | pontos |
@@ -34,4 +36,3 @@
 | ----- | ---------------------- | ------ |
 | [x]   | [Filtro de certificados](./../widget/entities/view/widget_certificate.dart) | 2      |
 
-# Total: 28 pontos
