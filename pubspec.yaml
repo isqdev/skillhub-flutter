@@ -33,6 +33,7 @@ dependencies:
   mask_text_input_formatter: ^2.9.0
   shared_preferences: ^2.2.2
   http: ^1.1.0
+  fl_chart: ^0.66.2
 
 dev_dependencies:
   flutter_test:
