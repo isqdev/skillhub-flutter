@@ -303,13 +303,13 @@ class _WidgetDashboardState extends State<WidgetDashboard> with WidgetsBindingOb
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                Icons.settings,
+                                Icons.dynamic_feed, // MUDANÇA: ícone para social/feed
                                 color: AppColors.white,
                                 size: 20,
                               ),
                               SizedBox(height: 2),
                               Text(
-                                'Config',
+                                'Feed', // MUDANÇA: texto para social
                                 style: TextStyle(
                                   color: AppColors.white,
                                   fontSize: 10,
@@ -522,15 +522,20 @@ class _WidgetDashboardState extends State<WidgetDashboard> with WidgetsBindingOb
         
         // Grid circular - 3 por linha
         _buildCircularGrid(),
-        
-        SizedBox(height: 30),
-        
-        // NOVO: Seção de certificados horizontais
+      ],
+    );
+  }
+
+  // Página Direita - Social (com certificados e eventos)
+  Widget _buildRightPage() {
+    return Column(
+      children: [
+        // Seção de certificados horizontais
         _buildCertificatesHorizontalSection(),
         
         SizedBox(height: 30),
         
-        // NOVO: Seção de eventos horizontais
+        // Seção de eventos horizontais
         _buildEventsHorizontalSection(),
       ],
     );
@@ -1263,8 +1268,7 @@ class _WidgetDashboardState extends State<WidgetDashboard> with WidgetsBindingOb
             ),
           ),
         ),
-    ],
-  );
+    ]);
   }
 
   // NOVO: Método para criar grid circular com 3 por linha
@@ -1510,103 +1514,6 @@ class _WidgetDashboardState extends State<WidgetDashboard> with WidgetsBindingOb
     );
   }
 
-  // Página Direita - Configurações (permanece igual)
-  Widget _buildRightPage() {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      crossAxisSpacing: 15,
-      mainAxisSpacing: 15,
-      children: [
-        DashboardButton(
-          icon: Icons.person,
-          title: "Meu\nPerfil",
-          onPressed: () => Navigator.pushNamed(context, Routes.profile),
-        ),
-        DashboardButton(
-          icon: Icons.palette,
-          title: "Tema\nPersonalizado",
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Configuração de Tema')),
-            );
-          },
-        ),
-        DashboardButton(
-          icon: Icons.notifications,
-          title: "Notificações",
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Configurações de Notificação')),
-            );
-          },
-        ),
-        DashboardButton(
-          icon: Icons.backup,
-          title: "Backup\nDados",
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Backup de Dados')),
-            );
-          },
-        ),
-        DashboardButton(
-          icon: Icons.import_export,
-          title: "Importar/\nExportar",
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Importar/Exportar Dados')),
-            );
-          },
-        ),
-        DashboardButton(
-          icon: Icons.help,
-          title: "Ajuda e\nSuporte",
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Ajuda e Suporte')),
-            );
-          },
-        ),
-        DashboardButton(
-          icon: Icons.info,
-          title: "Sobre o\nApp",
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Sobre o App')),
-            );
-          },
-        ),
-        DashboardButton(
-          icon: Icons.logout,
-          title: "Sair",
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: Text('Confirmar'),
-                content: Text('Deseja realmente sair?'),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text('Cancelar'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      // Implementar logout
-                    },
-                    child: Text('Sair'),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ],
-    );
-  }
 }
 
 // DashboardButton permanece igual

@@ -242,7 +242,13 @@ class _InstitutionDropdownState extends State<InstitutionDropdown> {
             items: _institutions.map((InstitutionDto institution) {
               return DropdownMenuItem<InstitutionDto>(
                 value: institution,
-                child: Text(institution.name),
+                child: Text(
+                  institution.name.length > 30
+                      ? '${institution.name.substring(0, 30)}...'
+                      : institution.name,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
               );
             }).toList(),
             onChanged: widget.onChanged,

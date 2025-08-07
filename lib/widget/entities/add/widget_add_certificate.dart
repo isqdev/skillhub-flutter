@@ -115,21 +115,15 @@ class _WidgetAddCertificateState extends State<WidgetAddCertificate> {
     });
 
     try {
-      final tagsList = _tagsController.text
-          .split(',')
-          .map((tag) => tag.trim())
-          .where((tag) => tag.isNotEmpty)
-          .map((tag) => TagDto(name: tag))
-          .toList();
-
+      // Use _selectedTags em vez de _tagsController.text
       final certificate = CertificateDto(
         id: widget.isEditing ? widget.certificate!.id : null,
         name: _nomeController.text.trim(),
         institution: _selectedInstitution!,
         type: _tipoSelecionado!,
         hours: int.parse(_horasController.text),
-        tags: tagsList,
-        userId: _selectedUserId, // Use o ID do usuário selecionado
+        tags: _selectedTags, // Mudança aqui: use _selectedTags diretamente
+        userId: _selectedUserId,
       );
 
       if (widget.isEditing) {
