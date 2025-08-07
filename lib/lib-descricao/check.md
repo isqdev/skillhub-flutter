@@ -1,4 +1,4 @@
-# Total: 28 pontos
+# Total: 33 pontos
 
 ### Cadastro Simples - 3
 
@@ -36,3 +36,12 @@
 | ----- | ---------------------- | ------ |
 | [x]   | [Filtro de certificados](./../widget/entities/view/widget_certificate.dart) | 2      |
 
+## Gráfico - 3
+| feito | feature                | pontos |
+| ----- | ---------------------- | ------ |
+| [x]   | [Gráfico de tags](./../widget/widget_dashboard.dart) | 3      |
+
+## Organização em camadas - 2
+| feito | feature                | pontos |
+| ----- | ---------------------- | ------ |
+| [x]   | [Diretório](./../widget/) | 2      |
